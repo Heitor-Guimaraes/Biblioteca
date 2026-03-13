@@ -17,37 +17,50 @@ public class EmprestimoController {
     @Autowired
     private EmprestimoService service;
 
+
     @GetMapping
-    public List<EmprestimoDTO> getAll() {
-        return service.findAll();
+    public ResponseEntity<List<EmprestimoDTO>> getAll() {
+        return ResponseEntity.ok(service.findAll());
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<EmprestimoDTO> getById(@PathVariable Long id) {
         return service.findById(id)
-                .map(e -> new ResponseEntity<>(e, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
+
+
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<EmprestimoDTO>> getByUsuario(@PathVariable Long usuarioId) {
+        List<EmprestimoDTO> lista = service.findByUsuarioId(usuarioId);
+        if (lista.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(lista);
+    }
+
 
     @PostMapping("/usuario/{usuarioId}")
     public ResponseEntity<EmprestimoDTO> create(@PathVariable Long usuarioId, @RequestBody Emprestimo emprestimo) {
         return service.create(usuarioId, emprestimo)
-                .map(e -> new ResponseEntity<>(e, HttpStatus.OK))
+                .map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<EmprestimoDTO> update(@PathVariable Long id, @RequestBody Emprestimo details) {
         return service.update(id, details)
-                .map(e -> new ResponseEntity<>(e, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (service.delete(id)) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        boolean deleted = service.delete(id);
+        return deleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 }

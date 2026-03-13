@@ -2,8 +2,10 @@ package com.banco.caixa.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Lombok;
 import lombok.NoArgsConstructor;
 import java.util.Date;
+
 
 @Data
 @NoArgsConstructor
@@ -13,4 +15,7 @@ public class EmprestimoDTO {
     private Date dataEmprestimo;
     private Date dataDevolucao;
     private Long usuarioId;
+
+
 }
+
